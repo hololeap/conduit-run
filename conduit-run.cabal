@@ -1,0 +1,78 @@
+cabal-version:      3.0
+name:               conduit-run
+version:            0.1.0.0
+synopsis:           Run processes transparently or opaquely using conduit
+
+tested-with:        GHC == { 9.0.2, 9.2.8, 9.4.8, 9.6.7, 9.8.4, 9.10.2, 9.12.2 }
+
+description:
+  General convenience functions and error handling for running executables on
+  a Linux system and capturing the text they output.
+
+  NOTE: Because it uses 'sourceProcessWithStreams' from "Data.Conduit.Process",
+  this package requires a threaded runtime to function properly.
+
+homepage:           https://github.com/hololeap/conduit-run
+bug-reports:        https://github.com/hololeap/conduit-run/issues
+
+license:            AGPL-3.0-only
+license-file:       LICENSE
+author:             hololeap
+maintainer:         hololeap@protonmail.com
+
+copyright:          Copyright (C) 2025 hololeap
+category:           System
+build-type:         Simple
+extra-doc-files:    CHANGELOG.md
+-- extra-source-files:
+
+source-repository head
+    type:           git
+    location:       https://github.com/hololeap/conduit-run.git
+    branch:         main
+
+flag pedantic
+    description: Enable -Werror
+    default:     False
+    manual:      True
+
+common all
+    ghc-options:        -Wall
+    if flag(pedantic)
+        ghc-options:    -Werror
+
+common fast
+    ghc-options:        -threaded
+                        -with-rtsopts=-N
+
+library
+    import:           all
+    exposed-modules:
+        , Data.Conduit.Run
+    -- other-modules:
+    other-extensions:
+        , KindSignatures
+        , RankNTypes
+    build-depends:
+        , base >=4.13 && <4.22
+        , bytestring >=0.11 && <0.13
+        , conduit <1.4
+        , conduit-extra ^>= 1.3.7
+        , safe-exceptions ^>= 0.1.7.4
+        , text <2.2
+    default-language: Haskell2010
+    hs-source-dirs:   src
+
+test-suite conduit-run-test
+    import:           all, fast
+    default-language: Haskell2010
+    -- other-modules:
+    -- other-extensions:
+    type:             exitcode-stdio-1.0
+    hs-source-dirs:   test
+    main-is:          Main.hs
+    build-depends:
+        , conduit-run
+        , base >=4.13 && <4.22
+        , directory <1.4
+        , text <2.2

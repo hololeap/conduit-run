@@ -31,8 +31,8 @@ module Data.Conduit.Run
     , DataOutput
     , LinesOutput
       -- ** Output stream tags
-    , StdOut
-    , StdErr
+    , StdOut(..)
+    , StdErr(..)
       -- * Handling errors
     , RunProcessException(..)
     , fatal
@@ -149,7 +149,7 @@ tryProcess mInC outC errC cp0 = do
         Left e -> Left $ RPEException cp e
         Right (ec, o, e) -> case ec of
             ExitFailure _ -> Left $ RPEFailure cp ec o e
-            ExitSuccess -> Right (o, e)
+            ExitSuccess -> Right (StdOut o, StdErr e)
 
 -- | > newtype OutputType out
 --   >     = OutputSink (forall m. MonadThrow m => ConduitT ByteString Void m out)
@@ -183,10 +183,10 @@ linesOutput :: LinesOutput
 linesOutput = OutputSink $ linesUnboundedAsciiC .| sinkList
 
 -- | A captured stream from @stdout@
-type StdOut (out :: Type) = out
+newtype StdOut (out :: Type) = StdOut { unStdOut :: out }
 
 -- | A captured stream from @stderr@
-type StdErr (out :: Type) = out
+newtype StdErr (out :: Type) = StdErr { unStdErr :: out }
 
 -- | A process either returned an 'ExitFailure' or an exception
 data RunProcessException out

@@ -10,13 +10,13 @@ main = go $ \exe -> do
     let args = ["it", "works!"]
 
     putStrLn $ showCmd "runTransparent" exe args
-    (o,e) <- runTransparent textOutput exe args
+    (StdOut o, StdErr e) <- runTransparent textOutput exe args
     putStrLn $ "stdout: " ++ show (Lazy.toChunks o)
     putStrLn $ "stderr: " ++ show (Lazy.toChunks e)
     putStrLn ""
 
     putStrLn $ showCmd "runOpaque" exe args
-    (o',e') <- runOpaque textOutput exe args
+    (StdOut o', StdErr e') <- runOpaque textOutput exe args
     putStrLn $ "stdout: " ++ show (Lazy.toChunks o')
     putStrLn $ "stderr: " ++ show (Lazy.toChunks e')
     putStrLn ""
